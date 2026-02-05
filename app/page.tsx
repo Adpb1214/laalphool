@@ -1,165 +1,110 @@
 'use client';
 
-import { useState, useEffect, CSSProperties } from 'react';
-import MessagePopup from './components/MessagePopup';
-import RoseChoice from './components/RoseChoice';
-import FinalReveal from './components/FinalReveal';
+import { useState, CSSProperties } from 'react';
+import FlowerSelect from './components/FlowerSelect';
+import FirstPopup from './components/FirstPopup';
+import SecondPopup from './components/SecondPopup';
+import FinalModal from './components/FinalModal';
+import SmileModal from './components/SmileModal';
 
-type RoseType = 'laal' | 'gulabi';
-type GameState = 'choosing' | 'first-selected' | 'highlight-other' | 'both-selected';
+type FlowerType = 'laal' | 'neela';
+type GameState = 'choosing' | 'first-done' | 'highlight' | 'second-done' | 'final' | 'smile';
 
 const styles: { [key: string]: CSSProperties } = {
   main: {
     minHeight: '100vh',
-    background: 'linear-gradient(180deg, #fff5f5 0%, #ffe4e6 100%)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '2rem 1rem',
-    paddingBottom: '5rem',
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '2rem',
-  },
-  title: {
-    fontSize: '2.5rem',
-    color: '#be123c',
-    marginBottom: '0.5rem',
-  },
-  subtitle: {
-    fontSize: '1.2rem',
-    color: '#9f1239',
-    fontStyle: 'italic',
-  },
-  content: {
-    flex: 1,
+    background: '#fafafa',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
-    maxWidth: '800px',
-  },
-  footer: {
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    padding: '1rem',
-    background: 'linear-gradient(transparent, #ffe4e6)',
-  },
-  footerText: {
-    fontSize: '0.85rem',
-    color: '#881337',
-    fontWeight: 500,
-  },
-  trademark: {
-    fontSize: '0.7rem',
-    verticalAlign: 'super',
   },
 };
 
 export default function Home() {
   const [gameState, setGameState] = useState<GameState>('choosing');
-  const [firstChoice, setFirstChoice] = useState<RoseType | null>(null);
-  const [showPopup, setShowPopup] = useState(false);
+  const [firstFlower, setFirstFlower] = useState<FlowerType | null>(null);
+  const [showFirstPopup, setShowFirstPopup] = useState(false);
+  const [showSecondPopup, setShowSecondPopup] = useState(false);
   const [showFinal, setShowFinal] = useState(false);
+  const [showSmile, setShowSmile] = useState(false);
 
-  const handleRoseSelect = (rose: RoseType) => {
+  const handleFlowerSelect = (flower: FlowerType) => {
     if (gameState === 'choosing') {
-      // First selection
-      setFirstChoice(rose);
-      setGameState('first-selected');
-      setShowPopup(true);
-    } else if (gameState === 'highlight-other' && rose !== firstChoice) {
-      // Second selection
-      setGameState('both-selected');
-      setShowFinal(true);
+      setFirstFlower(flower);
+      setGameState('first-done');
+      setShowFirstPopup(true);
+    } else if (gameState === 'highlight' && flower !== firstFlower) {
+      setGameState('second-done');
+      setShowSecondPopup(true);
     }
   };
 
-  const handlePopupClose = () => {
-    setShowPopup(false);
-    // After closing popup, highlight the other rose
+  const handleFirstPopupClose = () => {
+    setShowFirstPopup(false);
     setTimeout(() => {
-      setGameState('highlight-other');
-    }, 300);
+      setGameState('highlight');
+    }, 400);
+  };
+
+  const handleSecondPopupClose = () => {
+    setShowSecondPopup(false);
+    setTimeout(() => {
+      setGameState('final');
+      setShowFinal(true);
+    }, 2500);
+  };
+
+  const handleFinalClose = () => {
+    setShowFinal(false);
+    // After final modal closes, show smile modal
+    setTimeout(() => {
+      setGameState('smile');
+      setShowSmile(true);
+    }, 500);
   };
 
   const handleReset = () => {
     setGameState('choosing');
-    setFirstChoice(null);
-    setShowPopup(false);
+    setFirstFlower(null);
+    setShowFirstPopup(false);
+    setShowSecondPopup(false);
     setShowFinal(false);
+    setShowSmile(false);
   };
 
   return (
     <main style={styles.main}>
-      {/* Header */}
-      <header style={styles.header}>
-        <h1 style={styles.title}>🌹 Ek Gulaab Chun Lo 🌹</h1>
-        <p style={styles.subtitle}>Dekho tumhari kismat mein kya likha hai...</p>
-      </header>
-
-      {/* Main Content */}
-      <div style={styles.content}>
-        <RoseChoice
-          onSelect={handleRoseSelect}
-          gameState={gameState}
-          firstChoice={firstChoice}
-        />
-
-        {/* Reset Button */}
-        {(gameState === 'highlight-other' || gameState === 'both-selected') && (
-          <button
-            onClick={handleReset}
-            style={{
-              marginTop: '2rem',
-              padding: '0.75rem 1.5rem',
-              background: 'white',
-              border: '2px solid #fda4af',
-              borderRadius: '25px',
-              color: '#be123c',
-              fontSize: '1rem',
-              cursor: 'pointer',
-              transition: 'all 0.3s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#fff1f2';
-              e.currentTarget.style.transform = 'scale(1.05)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'white';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-          >
-            🔄 Phir Se Khelo
-          </button>
-        )}
-      </div>
-
-      {/* Message Popup */}
-      <MessagePopup
-        isOpen={showPopup}
-        onClose={handlePopupClose}
-        roseType={firstChoice}
+      <FlowerSelect
+        onSelect={handleFlowerSelect}
+        selectedFlower={firstFlower}
+        highlightOther={gameState === 'highlight'}
+        disabled={gameState !== 'choosing' && gameState !== 'highlight'}
       />
 
-      {/* Final Reveal */}
-      <FinalReveal
-        isOpen={showFinal}
-        onClose={() => setShowFinal(false)}
-      />
-
-      {/* Footer */}
-      <footer style={styles.footer}>
-        <p style={styles.footerText}>
-          Created by <strong>the wrath of god</strong>
-          <span style={styles.trademark}>™</span>
+      {gameState === 'second-done' && !showSecondPopup && !showFinal && (
+        <p style={{ color: '#9ca3af', marginTop: '2rem' }}>
+          Ruko... kuch aa raha hai... ⏳
         </p>
-      </footer>
+      )}
+
+      <FirstPopup
+        isOpen={showFirstPopup}
+        onClose={handleFirstPopupClose}
+        flower={firstFlower}
+      />
+
+      <SecondPopup
+        isOpen={showSecondPopup}
+        onClose={handleSecondPopupClose}
+      />
+
+      <FinalModal
+        isOpen={showFinal}
+        onClose={handleFinalClose}  
+      />
+
+      <SmileModal isOpen={showSmile} />
     </main>
   );
 }

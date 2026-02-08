@@ -6,6 +6,7 @@ import FirstPopup from './components/FirstPopup';
 import SecondPopup from './components/SecondPopup';
 import FinalModal from './components/FinalModal';
 import SmileModal from './components/SmileModal';
+import { ClassicMovieTicket, RedTheaterTicket } from './components/ticketButton';
 
 type FlowerType = 'laal' | 'neela';
 type GameState = 'choosing' | 'first-done' | 'highlight' | 'second-done' | 'final' | 'smile';
@@ -103,7 +104,9 @@ export default function Home() {
         isOpen={showFinal}
         onClose={handleFinalClose}  
       />
-
+{/* 
+ <ClassicMovieTicket />
+          <RedTheaterTicket /> */}
       <SmileModal isOpen={showSmile} />
     </main>
   );

@@ -14,59 +14,61 @@ interface NoButtonState {
   text: string;
 }
 
-// Original texts from the first component
+// Original texts with some additions
 const effectTexts: Record<EffectType, string[]> = {
   escape: [
-    "Dhorte parbi na 😂",
-    "Palachi ami! 🏃",
-    "Aaye haye! 😜",
-    "Tui slow re 😏",
-    "Dhoro dekhi! 💨",
+    "Dhur! Pakka na! 😂",
+    "Uff! Esho na! 🏃",
+    "Hagun! Dheere aao! 😜",
+    "Areh! Rasto bhalo na! 😏",
+    "Chole gelam! Bye! 💨",
   ],
   shrink: [
-    "Choto hoye jachi 🤏",
-    "Dekhte pachcho? 🔍",
-    "Eto choto! 🐜",
-    "Zoom kor 👀",
-    "Microscope laga 😂",
+    "Chhoto hobo na! 🤏",
+    "Bhalo moto dekh! 🔍",
+    "Ki chhoto! Eto! 🐜",
+    "Chokh bondho koro! 👀",
+    "Bari theke dekho! 😂",
   ],
   spin: [
-    "Matha ghurche 🌀",
-    "Ghurchi ghurchi! 💫",
-    "Uff chakkar 😵‍💫",
-    "Thamte parchi na! 🌀",
-    "Round round! 🔄",
+    "Ghum asche! 🌀",
+    "Ghurte ghurte! 💫",
+    "Bandho kor! Bondhu! 😵‍💫",
+    "Tham! Ektu tham! 🌀",
+    "Round er modhye! 🔄",
   ],
   fade: [
-    "Gayab! 👻",
-    "Kothay gelam? 😏",
-    "Dekhte pacho? 🫥",
-    "Invisible! 👻",
-    "Poof! 🙈",
+    "Jabo na! 👻",
+    "Ami ekhane! 😏",
+    "Paucho ki? 🫥",
+    "Tor chokhe kajal! 👻",
+    "Uff re baba! 🙈",
   ],
   jelly: [
-    "Chhuna na! 😰",
-    "Bhoy korche 🥴",
-    "Kaanpchi! 😱",
-    "Please na 😨",
-    "Ahhh! 🥺",
+    "Chhuish na! 😰",
+    "Ke jani! 🥴",
+    "Kaanpe na! 😱",
+    "Darao na! 😨",
+    "Hayre! Eta ki! 🥺",
   ],
-  dead: ["Mor gelam 💀", "Geli aami ☠️", "Tata bye bye 🪦"],
+  dead: ["Hoilo! 💀", "Shesh! ☠️", "Chole gelam bhai! 🪦"],
 };
 
-// YES button hover texts (original)
+// YES button hover texts
 const yesHoverTexts = [
-  "Haan! 💚",
-  "Ami eto lucky? 🥺",
-  "Sotti bolcho? 😍",
-  "Yayyy! 🎉",
-  "Best decision! 💖",
-  "Tumi shera! ✨",
-  "Omg omg! 🥰",
-  "Khushi! 💕",
+  "Haan re! 💚",
+  "Ami to ready! 🥺",
+  "Bolo bolo! 😍",
+  "Hurry! Jao! 🎉",
+  "Cholo cinema! 💖",
+  "Ticket katbo! ✨",
+  "Ami to khushi! 🥰",
+  "Hurry up! 💕",
+  "Book kori! 🎬",
+  "Cholo jai! 🍿",
 ];
 
-// Celebration emojis (original)
+// Celebration emojis
 const celebrationEmojis = [
   "🎉",
   "✨",
@@ -78,6 +80,12 @@ const celebrationEmojis = [
   "💗",
   "😍",
   "🥰",
+  "🎬",
+  "🍿",
+  "🎫",
+  "🌟",
+  "💫",
+  "💘",
 ];
 
 const effectSequence: EffectType[] = [
@@ -93,7 +101,7 @@ export default function TheatreProposal() {
   const [attemptCount, setAttemptCount] = useState(0);
   const [noState, setNoState] = useState<NoButtonState>({
     effect: "escape",
-    position: { top: "55%", left: "60%" },
+    position: { top: "50%", left: "60%" },
     scale: 1,
     rotation: 0,
     opacity: 1,
@@ -102,18 +110,24 @@ export default function TheatreProposal() {
   const [message, setMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [confetti, setConfetti] = useState<
-    Array<{ id: number; left: string; emoji: string }>
+    Array<{ id: number; left: string; emoji: string; top: number }>
   >([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isHoveringNo, setIsHoveringNo] = useState(false);
 
-  // Yes button states (original)
+  // Yes button states
   const [isYesHovered, setIsYesHovered] = useState(false);
   const [yesText, setYesText] = useState("Haan! 💚");
   const [yesTextIndex, setYesTextIndex] = useState(0);
   const [celebrationParticles, setCelebrationParticles] = useState<
     Array<{ id: number; left: number; top: number; emoji: string }>
   >([]);
+
+  // Theatre effects
+  const [spotlightLeft, setSpotlightLeft] = useState(0);
+  const [spotlightRight, setSpotlightRight] = useState(100);
+  const [isSpotlightOn, setIsSpotlightOn] = useState(false);
+  const [screenText, setScreenText] = useState("");
 
   // Screen size detection
   const [isMobile, setIsMobile] = useState(false);
@@ -136,7 +150,43 @@ export default function TheatreProposal() {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  // Change yes text when hovered/touched (original)
+  // Start theatre sequence with spotlight animation
+  useEffect(() => {
+    const timer1 = setTimeout(() => {
+      setScreenText("🎬 Tonight's Special Presentation 🎭");
+    }, 1000);
+
+    const timer2 = setTimeout(() => {
+      setScreenText("❤️ A Question i wanted to ask for the Ages ❤️");
+    }, 2500);
+
+    const timer3 = setTimeout(() => {
+      setScreenText("");
+      // Start spotlight animation
+      setIsSpotlightOn(true);
+      setSpotlightLeft(-20);
+      setSpotlightRight(120);
+      
+      // Bring spotlights to center
+      setTimeout(() => {
+        setSpotlightLeft(30);
+        setSpotlightRight(70);
+      }, 500);
+      
+      setTimeout(() => {
+        setSpotlightLeft(40);
+        setSpotlightRight(60);
+      }, 1000);
+    }, 4000);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, []);
+
+  // Yes button hover effect - FASTER
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -147,7 +197,7 @@ export default function TheatreProposal() {
           setYesText(yesHoverTexts[next]);
           return next;
         });
-      }, 600);
+      }, 400); // Faster: 400ms instead of 600ms
     } else {
       setYesText("Haan! 💚");
       setYesTextIndex(0);
@@ -156,7 +206,7 @@ export default function TheatreProposal() {
     return () => clearInterval(interval);
   }, [isYesHovered]);
 
-  // Spawn celebration emojis (original)
+  // Celebration particles for Yes button
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -172,8 +222,8 @@ export default function TheatreProposal() {
             ],
         };
 
-        setCelebrationParticles((prev) => [...prev.slice(-10), newParticle]);
-      }, 250);
+        setCelebrationParticles((prev) => [...prev.slice(-15), newParticle]);
+      }, 200);
     } else {
       setCelebrationParticles([]);
     }
@@ -181,29 +231,29 @@ export default function TheatreProposal() {
     return () => clearInterval(interval);
   }, [isYesHovered]);
 
-  // Get random text for effect (original)
+  // Get random text for effect
   const getRandomText = (effect: EffectType): string => {
     const texts = effectTexts[effect];
     return texts[Math.floor(Math.random() * texts.length)];
   };
 
-  // Get random position - Responsive! (original)
+  // Get random position - FASTER ESCAPE
   const getRandomPosition = () => {
     const vw = screenSize.width || window.innerWidth;
     const vh = screenSize.height || window.innerHeight;
 
-    // Ticket size varies by screen
-    const ticketWidth = isMobile ? 140 : 200;
-    const ticketHeight = isMobile ? 100 : 140;
+    // Wider tickets
+    const ticketWidth = isMobile ? 180 : 280;
+    const ticketHeight = isMobile ? 120 : 160;
 
     // Safe margins
-    const marginX = isMobile ? 10 : 20;
-    const marginBottom = isMobile ? 80 : 120;
+    const marginX = isMobile ? 20 : 40;
+    const marginBottom = isMobile ? 100 : 150;
 
-    // Safe zone
+    // More extreme positions for faster escape
     const minX = marginX;
     const maxX = vw - ticketWidth - marginX;
-    const minY = vh * (isMobile ? 0.45 : 0.4);
+    const minY = vh * 0.3; // Higher up
     const maxY = vh - ticketHeight - marginBottom;
 
     const randomX = Math.random() * (maxX - minX) + minX;
@@ -215,7 +265,7 @@ export default function TheatreProposal() {
     };
   };
 
-  // Apply effect (original functionality)
+  // Apply effect - FASTER ANIMATIONS
   const applyEffect = (effect: EffectType) => {
     setIsAnimating(true);
     const newText = getRandomText(effect);
@@ -230,9 +280,9 @@ export default function TheatreProposal() {
           effect: "escape",
           position: newPos,
           scale: 1,
-          rotation: 0,
+          rotation: Math.random() * 20 - 10, // Slight random rotation
           opacity: 1,
-          text: "Na",
+          text: "Na!",
         }));
         break;
 
@@ -241,10 +291,10 @@ export default function TheatreProposal() {
           ...prev,
           effect: "shrink",
           position: newPos,
-          scale: 0.6,
+          scale: 0.5, // Smaller
           rotation: 0,
           opacity: 1,
-          text: "Na",
+          text: "Chhoto!",
         }));
         break;
 
@@ -254,9 +304,9 @@ export default function TheatreProposal() {
           effect: "spin",
           position: newPos,
           scale: 1,
-          rotation: prev.rotation + 720,
+          rotation: prev.rotation + 1080, // More spins
           opacity: 1,
-          text: "Na",
+          text: "Ghuri!",
         }));
         break;
 
@@ -267,8 +317,8 @@ export default function TheatreProposal() {
           position: newPos,
           scale: 1,
           rotation: 0,
-          opacity: 0.25,
-          text: "Na",
+          opacity: 0.2, // More transparent
+          text: "Gayab!",
         }));
         break;
 
@@ -277,37 +327,36 @@ export default function TheatreProposal() {
           ...prev,
           effect: "jelly",
           position: newPos,
-          scale: 1,
+          scale: 1.2, // Bigger when jelly
           rotation: 0,
           opacity: 1,
-          text: "Na",
+          text: "Kaap!",
         }));
         break;
 
       case "dead":
-        const vh = screenSize.height || window.innerHeight;
         setNoState((prev) => ({
           ...prev,
           effect: "dead",
-          position: { top: `${vh - 120}px`, left: prev.position.left },
-          scale: 1,
-          rotation: 180,
-          opacity: 0.4,
-          text: "Na",
+          position: { top: `${window.innerHeight - 100}px`, left: prev.position.left },
+          scale: 0.8,
+          rotation: 90,
+          opacity: 0.3,
+          text: "Shesh!",
         }));
         setTimeout(() => {
           handleYes();
-        }, 1500);
+        }, 1000); // Faster transition to success
         break;
     }
 
     setTimeout(() => {
       setMessage("");
       setIsAnimating(false);
-    }, 1200);
+    }, 800); // Faster message display
   };
 
-  // Handle No button hover - with delay (desktop only) (original)
+  // Handle No button hover - SHORTER DELAY (300ms instead of 500ms)
   const handleNoMouseEnter = () => {
     if (isMobile) return;
     if (isAnimating) return;
@@ -326,7 +375,7 @@ export default function TheatreProposal() {
         applyEffect(effect);
         setIsHoveringNo(false);
       }
-    }, 500);
+    }, 300); // Shorter: 300ms instead of 500ms
   };
 
   const handleNoMouseLeave = () => {
@@ -337,7 +386,7 @@ export default function TheatreProposal() {
     }
   };
 
-  // Handle touch/click on No (instant for mobile) (original)
+  // Handle touch/click on No - INSTANT
   const handleNoClick = () => {
     if (isAnimating) return;
     if (attemptCount >= effectSequence.length) return;
@@ -352,20 +401,21 @@ export default function TheatreProposal() {
     setIsHoveringNo(false);
   };
 
-  // Handle Yes (original)
+  // Handle Yes
   const handleYes = () => {
     setShowSuccess(true);
-
-    const emojis = ["🎉", "💖", "✨", "🥳", "💕", "🎊", "❤️", "💗", "😍", "🥰"];
-    const newConfetti = Array.from({ length: isMobile ? 50 : 80 }, (_, i) => ({
+    
+    // Create confetti from bottom
+    const newConfetti = Array.from({ length: isMobile ? 80 : 120 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
-      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+      top: 100 + Math.random() * 20,
+      emoji: celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)],
     }));
     setConfetti(newConfetti);
   };
 
-  // Cleanup timeout on unmount (original)
+  // Cleanup
   useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) {
@@ -374,15 +424,15 @@ export default function TheatreProposal() {
     };
   }, []);
 
-  // Hint text (original)
+  // Hint text
   const getHintText = () => {
     const hints = [
-      "Bhebe dekho... 👀",
-      "Oops! Paliye gelo 😂",
-      "Button ta smart 🏃",
-      "Ekhon kothay? 💫",
-      "Arre dhoro na! 😭",
-      "Button shesh 🪦",
+      "Careful... button bhage! 👀",
+      "Oho! Paliye gelo! 😂",
+      "Smart button re! 🏃",
+      "Ebar dhor! 💫",
+      "Dhoro na ke! 😭",
+      "Shesh hoye gelo! 🪦",
     ];
     return hints[Math.min(attemptCount, hints.length - 1)];
   };
@@ -391,37 +441,38 @@ export default function TheatreProposal() {
   const styles: { [key: string]: CSSProperties } = {
     container: {
       minHeight: "100dvh",
-      background: "linear-gradient(to bottom, #111 0%, #000 50%, #111 100%)",
+      background: "linear-gradient(to bottom, #000 0%, #111 30%, #222 100%)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "flex-start",
       position: "relative",
       overflow: "hidden",
-      fontFamily: '"Arial", sans-serif',
+      fontFamily: '"Segoe UI", "Arial", sans-serif',
     },
     
     // Theatre screen
     screenContainer: {
       width: "100%",
-      maxWidth: "800px",
-      margin: "2rem auto",
+      maxWidth: "900px",
+      margin: "40px auto 20px",
       position: "relative",
       zIndex: 10,
     },
     
     screen: {
       width: "100%",
-      aspectRatio: "16/9",
-      background: "linear-gradient(135deg, #000428, #004e92)",
-      borderRadius: "10px",
+      aspectRatio: "21/9", // Wider cinema screen
+      background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)",
+      borderRadius: "8px",
       boxShadow: `
-        0 0 100px rgba(0, 150, 255, 0.3),
-        inset 0 0 50px rgba(0, 0, 0, 0.7),
-        0 0 0 2px rgba(255, 255, 255, 0.1)
+        0 0 150px rgba(0, 150, 255, 0.4),
+        inset 0 0 80px rgba(0, 0, 0, 0.9),
+        0 0 0 3px rgba(255, 215, 0, 0.3)
       `,
       position: "relative",
       overflow: "hidden",
+      border: "1px solid rgba(255, 215, 0, 0.2)",
     },
     
     screenContent: {
@@ -431,262 +482,367 @@ export default function TheatreProposal() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      color: "#fff",
-      textShadow: "0 0 10px rgba(255,255,255,0.5)",
+      color: "#FFD700",
+      textShadow: "0 0 20px rgba(255, 215, 0, 0.7)",
       zIndex: 2,
       padding: "2rem",
       textAlign: "center",
     },
     
-    questionText: {
-      fontSize: isMobile ? "1.5rem" : "2.5rem",
-      fontWeight: 800,
+    screenText: {
+      fontSize: isMobile ? "1.2rem" : "1.8rem",
+      fontWeight: 600,
       color: "#FFD700",
-      textShadow: "0 0 30px rgba(255, 215, 0, 0.9)",
-      margin: "1rem 0",
+      opacity: 0.8,
+      transition: "all 1s ease",
       textAlign: "center",
-      animation: "pulse 2s infinite",
+      maxWidth: "90%",
+      lineHeight: 1.4,
     },
     
-    // Message Popup (original)
-    messagePopup: {
-      position: "fixed",
-      top: isMobile ? "8%" : "10%",
+    questionText: {
+      fontSize: isMobile ? "1.8rem" : "3rem",
+      fontWeight: 900,
+      color: "#FFD700",
+      textShadow: "0 0 40px rgba(255, 215, 0, 0.9), 0 0 20px rgba(255, 215, 0, 0.6)",
+      margin: "1rem 0",
+      textAlign: "center",
+      animation: "pulse 2s infinite, text-glow 3s ease-in-out infinite",
+      lineHeight: "1.3",
+    },
+    
+    foreverText: {
+      fontSize: isMobile ? "1.2rem" : "2rem",
+      fontWeight: 700,
+      color: "#FF6347",
+      textShadow: "0 0 20px rgba(255, 99, 71, 0.7)",
+      marginTop: "0.5rem",
+      animation: "fade-in-out 3s infinite",
+    },
+    
+    // Audience area with seats
+    audienceArea: {
+      width: "100%",
+      maxWidth: "900px",
+      margin: "20px auto",
+      position: "relative",
+      zIndex: 5,
+    },
+    
+    audienceRow: {
+      display: "flex",
+      justifyContent: "center",
+      gap: isMobile ? "8px" : "12px",
+      marginBottom: isMobile ? "10px" : "15px",
+    },
+    
+    audienceMember: {
+      width: isMobile ? "25px" : "35px",
+      height: isMobile ? "35px" : "45px",
+      background: "linear-gradient(to bottom, #333, #222)",
+      borderRadius: "5px 5px 2px 2px",
+      boxShadow: "inset 0 0 8px rgba(0,0,0,0.6)",
+      position: "relative",
+    },
+    
+    audienceHead: {
+      position: "absolute",
+      top: "5px",
       left: "50%",
       transform: "translateX(-50%)",
-      background: "rgba(0, 0, 0, 0.9)",
-      color: "white",
-      padding: isMobile ? "0.75rem 1.25rem" : "1rem 2rem",
-      borderRadius: "40px",
-      fontSize: isMobile ? "1rem" : "1.3rem",
-      fontWeight: 600,
+      width: isMobile ? "15px" : "20px",
+      height: isMobile ? "15px" : "20px",
+      background: "linear-gradient(to bottom, #444, #333)",
+      borderRadius: "50%",
+    },
+    
+    // Spotlights from bottom
+    spotlightContainer: {
+      position: "absolute",
+      bottom: "0",
+      left: "0",
+      right: "0",
+      height: "300px",
+      zIndex: 3,
+      overflow: "hidden",
+      pointerEvents: "none",
+    },
+    
+    spotlightLeft: {
+      position: "absolute",
+      bottom: "0",
+      left: `${spotlightLeft}%`,
+      width: "200px",
+      height: "200px",
+      background: "radial-gradient(ellipse at center, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0.1) 40%, transparent 70%)",
+      filter: "blur(20px)",
+      transform: "translateX(-50%)",
+      opacity: isSpotlightOn ? 1 : 0,
+      transition: "all 1.5s ease-out",
+    },
+    
+    spotlightRight: {
+      position: "absolute",
+      bottom: "0",
+      left: `${spotlightRight}%`,
+      width: "200px",
+      height: "200px",
+      background: "radial-gradient(ellipse at center, rgba(255,99,71,0.4) 0%, rgba(255,99,71,0.1) 40%, transparent 70%)",
+      filter: "blur(20px)",
+      transform: "translateX(-50%)",
+      opacity: isSpotlightOn ? 1 : 0,
+      transition: "all 1.5s ease-out",
+    },
+    
+    // Message Popup
+    messagePopup: {
+      position: "fixed",
+      top: isMobile ? "15%" : "20%",
+      left: "50%",
+      transform: "translateX(-50%)",
+      background: "rgba(0, 0, 0, 0.95)",
+      color: "#FF6347",
+      padding: isMobile ? "1rem 1.5rem" : "1.5rem 2.5rem",
+      borderRadius: "50px",
+      fontSize: isMobile ? "1.1rem" : "1.4rem",
+      fontWeight: 700,
       zIndex: 100,
       animation: "pop 0.3s ease-out",
+      border: "3px solid #FF6347",
+      textAlign: "center",
       whiteSpace: "nowrap",
       maxWidth: "90vw",
-      textAlign: "center",
+      boxShadow: "0 0 30px rgba(255, 99, 71, 0.5)",
     },
     
     celebrationParticle: {
       position: "fixed",
-      fontSize: isMobile ? "1.2rem" : "1.8rem",
+      fontSize: isMobile ? "1.5rem" : "2rem",
       pointerEvents: "none",
       zIndex: 15,
       animation: "float-up 2s ease-out forwards",
     },
     
-    // Progress indicator (original)
+    // Progress indicator
     progressContainer: {
       position: "absolute",
-      bottom: "20px",
+      bottom: "30px",
       left: "50%",
       transform: "translateX(-50%)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: "10px",
+      gap: "15px",
       zIndex: 10,
     },
     
     dotsContainer: {
       display: "flex",
-      gap: "8px",
+      gap: "10px",
     },
     
     dot: {
-      width: "10px",
-      height: "10px",
+      width: "12px",
+      height: "12px",
       borderRadius: "50%",
-      background: "#333",
+      background: "#444",
       transition: "all 0.3s",
+      boxShadow: "inset 0 0 5px rgba(0,0,0,0.5)",
     },
     
     activeDot: {
-      background: "#ef4444",
-      transform: "scale(1.3)",
-      boxShadow: "0 0 10px #ef4444",
+      background: "#FF6347",
+      transform: "scale(1.4)",
+      boxShadow: "0 0 15px #FF6347",
     },
     
     completedDot: {
       background: "#22c55e",
-      boxShadow: "0 0 10px #22c55e",
+      boxShadow: "0 0 15px #22c55e",
     },
     
     hintText: {
-      color: "#888",
-      fontSize: isMobile ? "0.8rem" : "0.9rem",
+      color: "#aaa",
+      fontSize: isMobile ? "0.9rem" : "1rem",
       textAlign: "center",
-      background: "rgba(0,0,0,0.7)",
-      padding: "5px 15px",
-      borderRadius: "20px",
-      border: "1px solid #444",
+      background: "rgba(0,0,0,0.8)",
+      padding: "8px 20px",
+      borderRadius: "25px",
+      border: "2px solid #444",
+      backdropFilter: "blur(10px)",
     },
     
-    // Success screen (original)
+    // Success screen
     successOverlay: {
       position: "fixed",
       inset: 0,
-      background: "linear-gradient(135deg, #22c55e, #16a34a)",
+      background: "linear-gradient(135deg, #000428, #004e92, #000428)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       zIndex: 1000,
       padding: "2rem",
+      overflow: "hidden",
     },
     
     successEmoji: {
-      fontSize: isMobile ? "4rem" : "6rem",
+      fontSize: isMobile ? "5rem" : "7rem",
       marginBottom: "1rem",
-      animation: "heart-beat 1s ease-in-out infinite",
+      animation: "heart-beat 1s ease-in-out infinite, rotate-slow 10s linear infinite",
     },
     
     successTitle: {
-      fontSize: isMobile ? "2.5rem" : "3.5rem",
+      fontSize: isMobile ? "3rem" : "4rem",
       fontWeight: 900,
-      color: "white",
+      color: "#FFD700",
       marginBottom: "0.5rem",
       textAlign: "center",
-      textShadow: "0 0 20px rgba(255, 255, 255, 0.7)",
+      textShadow: "0 0 30px rgba(255, 215, 0, 0.8)",
+      animation: "pulse 2s infinite",
     },
     
     successSubtitle: {
-      fontSize: isMobile ? "1.2rem" : "1.5rem",
-      color: "rgba(255,255,255,0.9)",
+      fontSize: isMobile ? "1.5rem" : "2rem",
+      color: "#fff",
       marginBottom: "1rem",
       textAlign: "center",
+      textShadow: "0 0 10px rgba(255,255,255,0.5)",
     },
     
     successMessage: {
-      fontSize: isMobile ? "1rem" : "1.2rem",
-      color: "rgba(255,255,255,0.8)",
+      fontSize: isMobile ? "1.1rem" : "1.3rem",
+      color: "rgba(255,255,255,0.9)",
       marginTop: "2rem",
       textAlign: "center",
+      maxWidth: "600px",
     },
     
     confetti: {
       position: "fixed",
-      fontSize: isMobile ? "1.5rem" : "2rem",
+      fontSize: isMobile ? "1.8rem" : "2.5rem",
       pointerEvents: "none",
       zIndex: 1001,
     },
   };
 
+  // Generate audience rows
+  const renderAudience = () => {
+    const rows = isMobile ? 4 : 6;
+    const peoplePerRow = isMobile ? 10 : 15;
+    
+    return Array.from({ length: rows }).map((_, rowIndex) => (
+      <div key={rowIndex} style={styles.audienceRow}>
+        {Array.from({ length: peoplePerRow }).map((_, personIndex) => (
+          <div
+            key={personIndex}
+            style={{
+              ...styles.audienceMember,
+              opacity: 0.2 + (Math.random() * 0.6),
+            }}
+          >
+            <div style={styles.audienceHead} />
+          </div>
+        ))}
+      </div>
+    ));
+  };
+
   // ============ TICKET COMPONENTS ============
 
-  // Yes Ticket Component (Fixed position)
+  // Yes Ticket Component - WIDER AND BIGGER
   const YesTicket = () => {
     const ticketStyle: CSSProperties = {
       position: "fixed",
-      bottom: isMobile ? "100px" : "120px",
-      left: isMobile ? "50%" : "30%",
-      // transform: "translateX(-50%)",
-      width: isMobile ? "140px" : "200px",
-      height: isMobile ? "100px" : "140px",
-      background: "linear-gradient(to bottom, #ef4444, #dc2626)",
+      bottom: isMobile ? "120px" : "150px",
+      right: isMobile ? "50%" : "25%",
+      // transform: "translateX(50%)",
+      width: isMobile ? "200px" : "320px",
+      height: isMobile ? "140px" : "180px",
+      background: "linear-gradient(145deg, #22c55e, #16a34a, #22c55e)",
       border: "none",
-      borderRadius: "12px",
+      borderRadius: "15px",
       cursor: "pointer",
       overflow: "visible",
-      zIndex: 999, // HIGH Z-INDEX
-      transition: "all 0.3s ease",
+      zIndex: 999,
+      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
       transformOrigin: "center center",
       boxShadow: isYesHovered 
-        ? "0 20px 50px rgba(239, 68, 68, 0.7), 0 0 0 3px rgba(239, 68, 68, 0.3)" 
-        : "0 10px 30px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.1)",
-      transform: isYesHovered ? "translateX(-50%) scale(1.1)" : "translateX(-50%) scale(1)",
+        ? "0 25px 60px rgba(34, 197, 94, 0.7), 0 0 0 4px rgba(34, 197, 94, 0.4), inset 0 0 20px rgba(255,255,255,0.3)" 
+        : "0 15px 40px rgba(0,0,0,0.5), 0 0 0 3px rgba(255,255,255,0.1), inset 0 0 10px rgba(255,255,255,0.1)",
+      transform: isYesHovered ? "translateX(50%) scale(1.15)" : "translateX(50%) scale(1)",
     };
 
     const containerStyle: CSSProperties = {
-      padding: "15px",
+      padding: "20px",
       height: "100%",
       position: "relative",
       zIndex: 2,
       background: "white",
-      margin: "2px",
-      borderRadius: "10px",
-      border: "2px dashed #ef4444",
+      margin: "3px",
+      borderRadius: "12px",
+      border: "3px dashed #22c55e",
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
+      alignItems: "center",
     };
 
     const headerStyle: CSSProperties = {
       textAlign: "center" as const,
-      marginBottom: "8px",
-      paddingBottom: "6px",
-      borderBottom: "3px double #ef4444",
+      marginBottom: "12px",
+      paddingBottom: "10px",
+      borderBottom: "4px double #22c55e",
+      width: "100%",
     };
 
     const theatreNameStyle: CSSProperties = {
-      fontSize: isMobile ? "14px" : "18px",
+      fontSize: isMobile ? "18px" : "24px",
       fontWeight: "bold",
-      color: "#ef4444",
-      letterSpacing: "2px",
+      color: "#22c55e",
+      letterSpacing: "3px",
       textTransform: "uppercase",
-      marginBottom: "4px",
+      marginBottom: "6px",
+      textShadow: "2px 2px 4px rgba(0,0,0,0.2)",
     };
 
     const mainContentStyle: CSSProperties = {
-      display: "grid",
-      gridTemplateColumns: "2fr 1fr",
-      gap: "8px",
-      marginBottom: "8px",
-    };
-
-    const movieInfoStyle: CSSProperties = {
       display: "flex",
       flexDirection: "column",
-      gap: "4px",
+      gap: "8px",
+      marginBottom: "12px",
+      width: "100%",
+      alignItems: "center",
     };
 
     const movieTitleStyle: CSSProperties = {
-      fontSize: isMobile ? "11px" : "14px",
+      fontSize: isMobile ? "14px" : "18px",
       fontWeight: "bold",
       color: "#2F4F4F",
       lineHeight: "1.3",
+      textAlign: "center" as const,
     };
 
     const detailsStyle: CSSProperties = {
-      fontSize: isMobile ? "8px" : "10px",
+      fontSize: isMobile ? "10px" : "12px",
       color: "#696969",
       display: "flex",
-      flexDirection: "column",
-      gap: "2px",
-    };
-
-    const seatInfoStyle: CSSProperties = {
-      background: "#ef4444",
-      color: "white",
-      padding: "6px",
-      borderRadius: "6px",
-      textAlign: "center" as const,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-    };
-
-    const seatLabelStyle: CSSProperties = {
-      fontSize: "7px",
-      opacity: "0.8",
-      marginBottom: "2px",
-    };
-
-    const seatValueStyle: CSSProperties = {
-      fontSize: isMobile ? "16px" : "20px",
-      fontWeight: "bold",
+      justifyContent: "space-between",
+      width: "100%",
+      padding: "0 10px",
     };
 
     const ticketNumberStyle: CSSProperties = {
       textAlign: "center" as const,
-      fontSize: isMobile ? "9px" : "11px",
-      color: "#ef4444",
+      fontSize: isMobile ? "11px" : "14px",
+      color: "#22c55e",
       fontWeight: "bold",
-      letterSpacing: "2px",
-      padding: "4px",
-      background: "#FFFACD",
-      borderRadius: "4px",
-      border: "1px solid #ef4444",
+      letterSpacing: "3px",
+      padding: "8px 15px",
+      background: "linear-gradient(to right, #FFFACD, #FFF8DC)",
+      borderRadius: "6px",
+      border: "2px solid #22c55e",
+      marginTop: "8px",
     };
 
     return (
@@ -700,157 +856,132 @@ export default function TheatreProposal() {
       >
         <div style={containerStyle}>
           <div style={headerStyle}>
-            <div style={theatreNameStyle}>YES TICKET</div>
-            <div style={{ fontSize: isMobile ? "9px" : "11px", color: "#696969" }}>
+            <div style={theatreNameStyle}>YES! 🎫</div>
+            <div style={{ 
+              fontSize: isMobile ? "12px" : "16px", 
+              color: "#696969",
+              fontWeight: "600",
+              animation: "text-color-change 2s infinite"
+            }}>
               {yesText}
             </div>
           </div>
 
           <div style={mainContentStyle}>
-            <div style={movieInfoStyle}>
-              <div style={movieTitleStyle}>PERMANENT MOVIE PARTNER?</div>
-              <div style={detailsStyle}>
-                <div><strong>SHOW:</strong> Forever</div>
-                <div><strong>RATING:</strong> 💖💖💖💖💖</div>
-                <div><strong>PRICE:</strong> Your Heart ❤️</div>
-              </div>
-            </div>
-
-            <div style={seatInfoStyle}>
-              <div style={seatLabelStyle}>ROW</div>
-              <div style={seatValueStyle}>🥰</div>
-              <div style={{ ...seatLabelStyle, marginTop: "4px" }}>SEAT</div>
-              <div style={seatValueStyle}>❤️</div>
+            <div style={movieTitleStyle}>I WILL BE YOUR<br />MOVIE PARTNER! ❤️</div>
+            <div style={detailsStyle}>
+              <div><strong>SHOW:</strong> Forever</div>
+              <div><strong>SEAT:</strong> Heart ❤️</div>
+              <div><strong>TIME:</strong> Always</div>
             </div>
           </div>
 
           <div style={ticketNumberStyle}>
-            TICKET: YES-{String(attemptCount + 1).padStart(3, '0')}
+            TICKET #: LOV-{String(attemptCount + 101).padStart(3, '0')}
           </div>
         </div>
       </button>
     );
   };
 
-  // No Ticket Component (Movable)
+  // No Ticket Component - WIDER AND ESCAPES FASTER
   const NoTicket = () => {
     const ticketWrapperStyle: CSSProperties = {
       position: "fixed",
-      zIndex: 1000, // HIGHEST Z-INDEX TO GO ABOVE EVERYTHING
-      transition: "all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+      zIndex: 1000,
+      transition: "all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)", // Faster transition
       top: noState.position.top,
       left: noState.position.left,
-      transform: `translate(-50%, -50%) rotate(${noState.rotation}deg)`,
+      transform: `translate(-50%, -50%) rotate(${noState.rotation}deg) scale(${noState.scale})`,
       opacity: noState.opacity,
     };
 
     const ticketStyle: CSSProperties = {
       position: "relative",
-      width: isMobile ? "140px" : "200px",
-      height: isMobile ? "100px" : "140px",
-      background: "linear-gradient(to bottom, #ef4444, #dc2626)",
+      width: isMobile ? "200px" : "320px",
+      height: isMobile ? "140px" : "180px",
+      background: "linear-gradient(145deg, #ef4444, #dc2626, #ef4444)",
       border: "none",
-      borderRadius: "12px",
+      borderRadius: "15px",
       cursor: "pointer",
       overflow: "visible",
-      transform: `scale(${noState.scale})`,
-      transition: "transform 0.3s, box-shadow 0.3s",
+      transition: "transform 0.2s, box-shadow 0.2s",
       boxShadow: isHoveringNo 
-        ? "0 20px 50px rgba(239, 68, 68, 0.7), 0 0 0 3px rgba(239, 68, 68, 0.3)" 
-        : "0 10px 30px rgba(239, 68, 68, 0.4), 0 0 0 2px rgba(255,255,255,0.1)",
-      animation: noState.effect === "jelly" && isAnimating ? "shake 0.3s ease-in-out infinite" : "none",
+        ? "0 25px 60px rgba(239, 68, 68, 0.7), 0 0 0 4px rgba(239, 68, 68, 0.4), inset 0 0 20px rgba(255,255,255,0.3)" 
+        : "0 15px 40px rgba(239, 68, 68, 0.4), 0 0 0 3px rgba(255,255,255,0.1), inset 0 0 10px rgba(255,255,255,0.1)",
+      animation: noState.effect === "jelly" && isAnimating ? "jelly-shake 0.2s ease-in-out infinite" : "none",
     };
 
     const containerStyle: CSSProperties = {
-      padding: "15px",
+      padding: "20px",
       height: "100%",
       position: "relative",
       zIndex: 2,
       background: "white",
-      margin: "2px",
-      borderRadius: "10px",
-      border: "2px dashed #ef4444",
+      margin: "3px",
+      borderRadius: "12px",
+      border: "3px dashed #ef4444",
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
+      alignItems: "center",
     };
 
     const headerStyle: CSSProperties = {
       textAlign: "center" as const,
-      marginBottom: "8px",
-      paddingBottom: "6px",
-      borderBottom: "3px double #ef4444",
+      marginBottom: "12px",
+      paddingBottom: "10px",
+      borderBottom: "4px double #ef4444",
+      width: "100%",
     };
 
     const theatreNameStyle: CSSProperties = {
-      fontSize: isMobile ? "14px" : "18px",
+      fontSize: isMobile ? "18px" : "24px",
       fontWeight: "bold",
       color: "#ef4444",
-      letterSpacing: "2px",
+      letterSpacing: "3px",
       textTransform: "uppercase",
-      marginBottom: "4px",
+      marginBottom: "6px",
+      textShadow: "2px 2px 4px rgba(0,0,0,0.2)",
     };
 
     const mainContentStyle: CSSProperties = {
-      display: "grid",
-      gridTemplateColumns: "2fr 1fr",
-      gap: "8px",
-      marginBottom: "8px",
-    };
-
-    const movieInfoStyle: CSSProperties = {
       display: "flex",
       flexDirection: "column",
-      gap: "4px",
+      gap: "8px",
+      marginBottom: "12px",
+      width: "100%",
+      alignItems: "center",
     };
 
     const movieTitleStyle: CSSProperties = {
-      fontSize: isMobile ? "11px" : "14px",
+      fontSize: isMobile ? "14px" : "18px",
       fontWeight: "bold",
       color: "#2F4F4F",
       lineHeight: "1.3",
+      textAlign: "center" as const,
     };
 
     const detailsStyle: CSSProperties = {
-      fontSize: isMobile ? "8px" : "10px",
+      fontSize: isMobile ? "10px" : "12px",
       color: "#696969",
       display: "flex",
-      flexDirection: "column",
-      gap: "2px",
-    };
-
-    const seatInfoStyle: CSSProperties = {
-      background: "#ef4444",
-      color: "white",
-      padding: "6px",
-      borderRadius: "6px",
-      textAlign: "center" as const,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-    };
-
-    const seatLabelStyle: CSSProperties = {
-      fontSize: "7px",
-      opacity: "0.8",
-      marginBottom: "2px",
-    };
-
-    const seatValueStyle: CSSProperties = {
-      fontSize: isMobile ? "16px" : "20px",
-      fontWeight: "bold",
+      justifyContent: "space-between",
+      width: "100%",
+      padding: "0 10px",
     };
 
     const ticketNumberStyle: CSSProperties = {
       textAlign: "center" as const,
-      fontSize: isMobile ? "9px" : "11px",
+      fontSize: isMobile ? "11px" : "14px",
       color: "#ef4444",
       fontWeight: "bold",
-      letterSpacing: "2px",
-      padding: "4px",
-      background: "#FFFACD",
-      borderRadius: "4px",
-      border: "1px solid #ef4444",
+      letterSpacing: "3px",
+      padding: "8px 15px",
+      background: "linear-gradient(to right, #FFFACD, #FFF8DC)",
+      borderRadius: "6px",
+      border: "2px solid #ef4444",
+      marginTop: "8px",
     };
 
     return (
@@ -867,32 +998,28 @@ export default function TheatreProposal() {
         >
           <div style={containerStyle}>
             <div style={headerStyle}>
-              <div style={theatreNameStyle}>NO TICKET</div>
-              <div style={{ fontSize: isMobile ? "9px" : "11px", color: "#696969" }}>
+              <div style={theatreNameStyle}>NO! 🏃</div>
+              <div style={{ 
+                fontSize: isMobile ? "12px" : "16px", 
+                color: "#696969",
+                fontWeight: "600",
+                fontStyle: "italic"
+              }}>
                 {noState.text}
               </div>
             </div>
 
             <div style={mainContentStyle}>
-              <div style={movieInfoStyle}>
-                <div style={movieTitleStyle}>MOVIE PARTNER?</div>
-                <div style={detailsStyle}>
-                  <div><strong>SHOW:</strong> Running</div>
-                  <div><strong>RATING:</strong> 😂😂😂😂</div>
-                  <div><strong>PRICE:</strong> Free 😜</div>
-                </div>
-              </div>
-
-              <div style={seatInfoStyle}>
-                <div style={seatLabelStyle}>ROW</div>
-                <div style={seatValueStyle}>🏃</div>
-                <div style={{ ...seatLabelStyle, marginTop: "4px" }}>SEAT</div>
-                <div style={seatValueStyle}>💨</div>
+              <div style={movieTitleStyle}>MOVIE PARTNER?<br />NAH! RUNNING AWAY! 💨</div>
+              <div style={detailsStyle}>
+                <div><strong>SHOW:</strong> Running</div>
+                <div><strong>SEAT:</strong> Gone 😂</div>
+                <div><strong>TIME:</strong> Never</div>
               </div>
             </div>
 
             <div style={ticketNumberStyle}>
-              TICKET: NO-{String(attemptCount + 1).padStart(3, '0')}
+              TICKET #: RUN-{String(attemptCount + 1).padStart(3, '0')}
             </div>
           </div>
         </button>
@@ -900,7 +1027,7 @@ export default function TheatreProposal() {
     );
   };
 
-  // Success Screen (original)
+  // Success Screen
   if (showSuccess) {
     return (
       <div style={styles.successOverlay}>
@@ -910,25 +1037,34 @@ export default function TheatreProposal() {
             style={{
               ...styles.confetti,
               left: c.left,
-              top: "-50px",
-              animation: `confetti-fall ${2 + Math.random() * 2}s linear forwards`,
-              animationDelay: `${Math.random() * 0.5}s`,
+              top: `${c.top}%`,
+              animation: `confetti-rise ${1.5 + Math.random() * 1}s ease-out forwards`,
+              animationDelay: `${Math.random() * 0.3}s`,
+              transform: `rotate(${Math.random() * 360}deg)`,
             }}
           >
             {c.emoji}
           </span>
         ))}
 
-        <span style={styles.successEmoji}>💖</span>
+        <span style={styles.successEmoji}>🎬💖</span>
 
-        <h1 style={styles.successTitle}>YAYYYY! 🎉</h1>
+        <h1 style={styles.successTitle}>CINEMA DATE CONFIRMED! 🎉</h1>
 
-        <p style={styles.successSubtitle}>Jantam tumi haan bolbe! 🥰</p>
+        <p style={styles.successSubtitle}>Can I be your movie partner? FOREVER ACCEPTED! ❤️</p>
 
-        <p style={styles.successMessage}>Ebar taratari reply kor ✨</p>
+        <p style={styles.successMessage}>
+          &#34;Forever and ever and ever...&ldquo; starts now!<br />
+          Get ready for unlimited movies together! 🍿✨
+        </p>
 
-        <p style={{ ...styles.successMessage, fontSize: isMobile ? "0.9rem" : "1.1rem" }}>
-          (Dekh! Na bolte parli na 😏)
+        <p style={{ 
+          ...styles.successMessage, 
+          fontSize: isMobile ? "1rem" : "1.2rem",
+          color: "rgba(255, 215, 0, 0.9)",
+          marginTop: "3rem"
+        }}>
+          (Tried to run, but love for cinema caught you! 😏)
         </p>
       </div>
     );
@@ -936,6 +1072,12 @@ export default function TheatreProposal() {
 
   return (
     <div style={styles.container} ref={containerRef}>
+      {/* Spotlights from bottom */}
+      <div style={styles.spotlightContainer}>
+        <div style={styles.spotlightLeft} />
+        <div style={styles.spotlightRight} />
+      </div>
+
       {/* Celebration Particles */}
       {celebrationParticles.map((p) => (
         <span
@@ -951,18 +1093,31 @@ export default function TheatreProposal() {
       ))}
 
       {/* Message Popup */}
-      {message && <div style={styles.messagePopup}>{message}</div>}
+      {message && <div style={styles.messagePopup}>🎭 {message} 🎥</div>}
 
       {/* Screen */}
       <div style={styles.screenContainer}>
         <div style={styles.screen}>
           <div style={styles.screenContent}>
-            <div style={styles.questionText}>
-              Can I be your permanent<br />
-              movie partner? 🍿🎬
-            </div>
+            {screenText ? (
+              <div style={styles.screenText}>{screenText}</div>
+            ) : (
+              <>
+                <div style={styles.questionText}>
+                  Can I be your movie partner?<br />
+                  <span style={styles.foreverText}>
+                    forever and ever and ever?(Because mujhe tujh jaisa partner milne nahi wala)
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </div>
+      </div>
+
+      {/* Audience */}
+      <div style={styles.audienceArea}>
+        {renderAudience()}
       </div>
 
       {/* Ticket Buttons */}
@@ -984,9 +1139,67 @@ export default function TheatreProposal() {
           ))}
         </div>
         <div style={styles.hintText}>
-          {getHintText()} | Try: {attemptCount}/{effectSequence.length}
+          ⚡ {getHintText()} | Tries: {attemptCount}/{effectSequence.length} ⚡
         </div>
       </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.8; }
+        }
+        
+        @keyframes text-glow {
+          0%, 100% { text-shadow: 0 0 40px rgba(255, 215, 0, 0.9), 0 0 20px rgba(255, 215, 0, 0.6); }
+          50% { text-shadow: 0 0 60px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.4); }
+        }
+        
+        @keyframes fade-in-out {
+          0%, 100% { opacity: 0.7; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        @keyframes pop {
+          0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+          70% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+          100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
+        
+        @keyframes float-up {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes jelly-shake {
+          0%, 100% { transform: scale(1.2) rotate(0deg); }
+          25% { transform: scale(1.2) rotate(5deg); }
+          50% { transform: scale(1.2) rotate(-5deg); }
+          75% { transform: scale(1.2) rotate(3deg); }
+        }
+        
+        @keyframes heart-beat {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+        }
+        
+        @keyframes rotate-slow {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes confetti-rise {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        @keyframes text-color-change {
+          0% { color: #696969; }
+          25% { color: #22c55e; }
+          50% { color: #16a34a; }
+          75% { color: #15803d; }
+          100% { color: #696969; }
+        }
+      `}</style>
     </div>
   );
 }

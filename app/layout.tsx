@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Ek Phool Chuno 🌸',
-  description: 'Bas ek phool chuno...',
+  title: 'LaalPhool Neelaphool prooo 🌸',
+  description: 'Part 2 ke liye ready?...',
 };
 
 export default function RootLayout({

@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, CSSProperties } from 'react';
-import FlowerSelect from './components/FlowerSelect';
 import FirstPopup from './components/FirstPopup';
 import SecondPopup from './components/SecondPopup';
 import FinalModal from './components/FinalModal';
 import SmileModal from './components/SmileModal';
 import { ClassicMovieTicket, RedTheaterTicket } from './components/ticketButton';
+import FlowerSelect from './components/FlowerChoice';
 
 type FlowerType = 'laal' | 'neela';
 type GameState = 'choosing' | 'first-done' | 'highlight' | 'second-done' | 'final' | 'smile';
@@ -85,7 +85,7 @@ export default function Home() {
 
       {gameState === 'second-done' && !showSecondPopup && !showFinal && (
         <p style={{ color: '#9ca3af', marginTop: '2rem' }}>
-          Ruko... kuch aa raha hai... ⏳
+          daraaaa ektuuu... ruko zara sabar karo... ⏳
         </p>
       )}
 

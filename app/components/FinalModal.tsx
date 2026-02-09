@@ -292,7 +292,7 @@ const FinalModal = ({ isOpen, onClose }: FinalModalProps) => {
         </p>
 
         <h1 style={styles.mainText}>
-          &quot;Tanushree tu ho sabse pyareeeee&quot;
+          &quot;Tanushree tum ho sabse pyareeeee&quot;
         </h1>
 
         <p style={styles.subText}>

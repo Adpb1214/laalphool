@@ -1104,7 +1104,7 @@ export default function TheatreProposal() {
             ) : (
               <>
                 <div style={styles.questionText}>
-                  Can I be your movie partner?<br />
+                  Can I be your Permanent movie partner?<br />
                   <span style={styles.foreverText}>
                     forever and ever and ever?(Because mujhe tujh jaisa partner milne nahi wala)
                   </span>
